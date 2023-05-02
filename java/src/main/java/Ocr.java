@@ -3,83 +3,84 @@ import java.util.ArrayList;
 
 public class Ocr {
 
-    static class Numeral {
-        public Numeral(char[][] characters) {
-
-        }
-        static char[][] zero = {
+    public enum Numeral {
+        zero(new char[][]{
+                    " _  ".toCharArray(),
+                    "| | ".toCharArray(),
+                    "|_| ".toCharArray(),
+                    "    ".toCharArray()}, 0),
+        one(new char[][]{
+                "    ".toCharArray(),
+                "  | ".toCharArray(),
+                "  | ".toCharArray(),
+                "    ".toCharArray()}, 1),
+        two(new char[][]{
                 " _  ".toCharArray(),
-                "| | ".toCharArray(),
+                " _| ".toCharArray(),
+                "|_  ".toCharArray(),
+                "    ".toCharArray()},2),
+        three(new char[][]{
+                " _  ".toCharArray(),
+                " _| ".toCharArray(),
+                " _| ".toCharArray(),
+                "    ".toCharArray()},3),
+        four(new char[][]{
+                "    ".toCharArray(),
                 "|_| ".toCharArray(),
-                "    ".toCharArray()};
-    }
+                "  | ".toCharArray(),
+                "    ".toCharArray()},4),
+        five(new char[][]{
+                " _  ".toCharArray(),
+                "|_  ".toCharArray(),
+                " _| ".toCharArray(),
+                "    ".toCharArray()},5),
+        six(new char[][]{
+                " _  ".toCharArray(),
+                "|_  ".toCharArray(),
+                "|_| ".toCharArray(),
+                "    ".toCharArray()},6),
+        seven(new char[][]{
+                " _  ".toCharArray(),
+                "  | ".toCharArray(),
+                "  | ".toCharArray(),
+                "    ".toCharArray()},7),
+        eight(new char[][]{
+                " _  ".toCharArray(),
+                "|_| ".toCharArray(),
+                "|_| ".toCharArray(),
+                "    ".toCharArray()},8),
+        nine(new char[][]{
+                " _  ".toCharArray(),
+                "|_| ".toCharArray(),
+                " _| ".toCharArray(),
+                "    ".toCharArray()},9)
+        ;
+        private final char[][] value;
+        private final int numeral;
 
-    private static final char[][][] NUMERALS = new char[][][] {
-        {" _  ".toCharArray(),
-         "| | ".toCharArray(),
-         "|_| ".toCharArray(),
-         "    ".toCharArray()},
-        {"    ".toCharArray(),
-         "  | ".toCharArray(),
-         "  | ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         " _| ".toCharArray(),
-         "|_  ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         " _| ".toCharArray(),
-         " _| ".toCharArray(),
-         "    ".toCharArray()},
-        {"    ".toCharArray(),
-         "|_| ".toCharArray(),
-         "  | ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         "|_  ".toCharArray(),
-         " _| ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         "|_  ".toCharArray(),
-         "|_| ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         "  | ".toCharArray(),
-         "  | ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         "|_| ".toCharArray(),
-         "|_| ".toCharArray(),
-         "    ".toCharArray()},
-        {" _  ".toCharArray(),
-         "|_| ".toCharArray(),
-         " _| ".toCharArray(),
-         "    ".toCharArray()}};
+        Numeral(char[][] value, int numeral) {
+            this.value = value;
+            this.numeral = numeral;
+        }
+
+        char asChar() {
+            return ("" + numeral).charAt(0);
+        }
+
+        boolean compareTo(char[][] other) {
+            return CharacterField.compareTwoCharArrays(value, other);
+        }
+
+    }
 
     public static List<String> parse(String... lines) {
         final List<String> result = new ArrayList<String>();
-        for (int i = 0; i < lines.length; i += 4) {
+        for (int i = 0; i < lines.length; i += CharacterField.FIELD_HEIGHT) {
             AccountRecord accountRecord = new AccountRecord();
             int rowOffset = i;
-
-            for (int pos = 0; pos < 9; ++pos) {
-                int columnOffset = 4 * pos;
-                accountRecord.setPositionToQuestionMark(pos);
-                boolean foundADigit = false;
-                for (int numeral = 0; numeral <= 9; ++numeral) {
-
-                    CharacterField field = CharacterField.fromLines(rowOffset, columnOffset, lines);
-                    if (field.compareTo(NUMERALS[numeral])) {
-                        char characterForTheNumeralWeFound = ("" + numeral).charAt(0);
-                        accountRecord.assignPositionToDigit(pos, characterForTheNumeralWeFound);
-                        foundADigit = true;
-                        break;
-                    }
-
-                }
-                if (!foundADigit) {
-                    accountRecord.markRecordAsIllegal();
-                }
+            for (int digitIndex = 0; digitIndex <= AccountRecord.DIGIT_COUNT; ++digitIndex) {
+                int columnOffset = CharacterField.FIELD_WIDTH * digitIndex;
+                accountRecord.assignDigitFromLines(lines, digitIndex, rowOffset, columnOffset);
             }
             result.add(accountRecord.getResult());
         }

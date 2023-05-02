@@ -1,5 +1,7 @@
 public class CharacterField {
 
+    public static final int FIELD_WIDTH = 4;
+    public static final int FIELD_HEIGHT = 4;
     public char[][] value;
 
     public CharacterField(char[][] value) {
@@ -24,11 +26,14 @@ public class CharacterField {
         return sixteenCharactersWereTryingToRecognize;
     }
 
+    boolean compareTo(Ocr.Numeral digit) {
+        return digit.compareTo(this.value);
+    }
     boolean compareTo(char[][] digit) {
         return compareTwoCharArrays(digit, this.value);
     }
 
-    static boolean compareTwoCharArrays(char[][] digit1, char[][] digit2) {
+    public static boolean compareTwoCharArrays(char[][] digit1, char[][] digit2) {
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 4; ++col) {
                 if (digit1[row][col] != digit2[row][col])

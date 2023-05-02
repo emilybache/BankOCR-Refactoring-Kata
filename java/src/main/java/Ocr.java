@@ -69,32 +69,29 @@ public class Ocr {
     public static List<String> parse(String... lines) {
         final List<String> result = new ArrayList<String>();
         for (int i = 0; i < lines.length; i += 4) {
+            AccountRecord accountRecord = new AccountRecord();
             int rowOffset = i;
-            final char[] work = "             ".toCharArray();
+
             for (int pos = 0; pos < 9; ++pos) {
                 int columnOffset = 4 * pos;
-                work[pos] = '?';
-                boolean got1 = false;
+                accountRecord.setPositionToQuestionMark(pos);
+                boolean foundADigit = false;
                 for (int numeral = 0; numeral <= 9; ++numeral) {
-                    boolean ok = true;
 
                     char[][] sixteenCharactersWereTryingToRecognize = getTheNextSixteenCharacters(rowOffset, columnOffset, lines);
-                    if (!compareTwoCharArrays(NUMERALS[numeral], sixteenCharactersWereTryingToRecognize))
-                        ok = false;
-
-                    if (ok) {
+                    if (compareTwoCharArrays(NUMERALS[numeral], sixteenCharactersWereTryingToRecognize)) {
                         char characterForTheNumeralWeFound = ("" + numeral).charAt(0);
-                        work[pos] = characterForTheNumeralWeFound;
-                        got1 = true;
+                        accountRecord.assignPositionToDigit(pos, characterForTheNumeralWeFound);
+                        foundADigit = true;
                         break;
                     }
+
                 }
-                if (!got1) {
-                    work[10] = 'I';
-                    work[11] = work[12] = 'L';
+                if (!foundADigit) {
+                    accountRecord.markRecordAsIllegal();
                 }
             }
-            result.add(new String(work));
+            result.add(accountRecord.getResult());
         }
         return result;
     }

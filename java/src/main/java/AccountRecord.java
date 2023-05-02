@@ -10,7 +10,7 @@ public class AccountRecord {
     void assignDigitFromLines(String[] lines, int pos, int rowOffset, int columnOffset) {
         boolean foundADigit = false;
 
-        for (Ocr.Numeral n : Ocr.Numeral.values()) {
+        for (Numeral n : Numeral.values()) {
             CharacterField field = CharacterField.fromLines(rowOffset, columnOffset, lines);
             if (field.compareTo(n)) {
                 assignPositionToDigit(pos, n.asChar());

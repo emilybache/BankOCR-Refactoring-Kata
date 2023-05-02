@@ -26,7 +26,7 @@ public class CharacterField {
         return sixteenCharactersWereTryingToRecognize;
     }
 
-    boolean compareTo(Ocr.Numeral digit) {
+    boolean compareTo(Numeral digit) {
         return digit.compareTo(this.value);
     }
     boolean compareTo(char[][] digit) {

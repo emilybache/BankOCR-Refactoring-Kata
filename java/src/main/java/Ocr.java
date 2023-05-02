@@ -3,16 +3,6 @@ import java.util.ArrayList;
 
 public class Ocr {
 
-    static boolean compareTwoCharArrays(char[][] digit1, char[][] digit2) {
-        for (int row = 0; row < 4; ++row) {
-            for (int col = 0; col < 4; ++col) {
-                if (digit1[row][col] != digit2[row][col])
-                    return false;
-            }
-        }
-        return true;
-    }
-
     static class Numeral {
         public Numeral(char[][] characters) {
 
@@ -78,8 +68,8 @@ public class Ocr {
                 boolean foundADigit = false;
                 for (int numeral = 0; numeral <= 9; ++numeral) {
 
-                    char[][] sixteenCharactersWereTryingToRecognize = getTheNextSixteenCharacters(rowOffset, columnOffset, lines);
-                    if (compareTwoCharArrays(NUMERALS[numeral], sixteenCharactersWereTryingToRecognize)) {
+                    CharacterField field = CharacterField.fromLines(rowOffset, columnOffset, lines);
+                    if (field.compareTo(NUMERALS[numeral])) {
                         char characterForTheNumeralWeFound = ("" + numeral).charAt(0);
                         accountRecord.assignPositionToDigit(pos, characterForTheNumeralWeFound);
                         foundADigit = true;
@@ -96,16 +86,4 @@ public class Ocr {
         return result;
     }
 
-    private static char[][] getTheNextSixteenCharacters(int rowOffset, int columnOffset, String[] lines) {
-        char[][] sixteenCharactersWereTryingToRecognize = new char[4][];
-        for (int row = 0; row < 4; ++row) {
-            sixteenCharactersWereTryingToRecognize[row] = new char[4];
-            for (int col = 0; col < 4; ++col) {
-                char c = lines[rowOffset + row].charAt(columnOffset + col);
-                sixteenCharactersWereTryingToRecognize[row][col] = c;
-
-            }
-        }
-        return sixteenCharactersWereTryingToRecognize;
-    }
 }
